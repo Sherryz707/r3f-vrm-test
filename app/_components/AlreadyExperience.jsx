@@ -20,9 +20,10 @@ const CameraManager = () => (
 
 function Experience() {
   // Leva controls for real-time adjustments
-  const { position, rotation } = useControls({
+  const { position, rotation,expression } = useControls({
     position: { value: [0, -0.3, 4.0], step: 0.1 },
     rotation: { value: [0, 3.1, 0], step: 0.1 },
+    expression: { options: ['neutral','happy']}
   });
     const [currentVrm,setCurrentVrm]=useState()
   useEffect(() => {
@@ -44,7 +45,9 @@ function Experience() {
         });
 
           setCurrentVrm(vrm);
-          console.log("mesh",vrm.scene.children[0])
+        console.log("mesh", vrm.scene.children[0])
+        // rotate if the VRM is VRM0.0
+			  VRMUtils.rotateVRM0( vrm );
         
       },
       (progress) => console.log('Loading model...', (progress.loaded / progress.total) * 100, '%'),
@@ -76,7 +79,7 @@ function Experience() {
         <Environment preset="studio" />
 
         {/* Avatar Model */}
-              {currentVrm && <Model currentVrm={currentVrm} position={position} rotation={rotation} />}
+              {currentVrm && <Model currentVrm={currentVrm} position={position} rotation={rotation} expression={expression} />}
 
         {/* Camera Controls */}
         <CameraManager />
