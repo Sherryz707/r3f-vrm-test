@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useAnimations } from '@react-three/drei';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
-import { AnimationMixer, NumberKeyframeTrack, AnimationClip,LoopOnce,Vector3 } from 'three'; // Import only necessary components
+import { AnimationMixer, NumberKeyframeTrack, AnimationClip,LoopOnce,Vector3,MathUtils } from 'three'; // Import only necessary components
 import { Leva, useControls } from 'leva'; // Use useControls instead of useControl
 import { useFrame, useThree } from '@react-three/fiber';
 import {loadMixamoAnimation} from "./loadMixamoAnim"
@@ -17,16 +17,14 @@ export const Model = ({ currentVrm, expression, ...props }) => {
   // mixamo animation
   
   useEffect(() => {
-    const bone = currentVrm.humanoid.getNormalizedBoneNode('leftHand'); // This will return an Object3D
-      if (bone) {
-        boneRef.current = bone;
-      }
-    loadFBX("./Dance.fbx")
-    // let action = actions['happy'];
+    
+    loadFBX("/Waving.fbx")
+    
     const action = actions['happy']
     action.reset().fadeIn(0.5).play();
-    action.loop=LoopOnce
-    action.clampWhenFinished = true;
+    action.clampWhenFinished = true; // Stop the animation at the last frame
+    action.loop=LoopOnce; 
+    
     
 
     
@@ -60,8 +58,18 @@ export const Model = ({ currentVrm, expression, ...props }) => {
     loadMixamoAnimation( animationUrl, currentVrm ).then( ( clip ) => {
 
       // Apply the loaded animation to mixer and play
-      currentMixer.clipAction( clip ).play();
-      currentMixer.timeScale = 1
+      const action = currentMixer.clipAction(clip)
+      action.reset().fadeIn(0.5).play()
+      action.clampWhenFinished = true; // Stop the animation at the last frame
+      action.loop=LoopOnce;
+      setTimeout(() => {
+        action.paused = true;
+        const bone = currentVrm.humanoid.getNormalizedBoneNode('rightHand'); // This will return an Object3D
+      if (bone) {
+        boneRef.current = bone;
+      }
+        // Pause animation
+    }, 1055); // 50
 
     } );
 
@@ -86,13 +94,37 @@ export const Model = ({ currentVrm, expression, ...props }) => {
     if (currentVrm) {
       currentVrm.update(delta)
     }
-    if (boneRef.current) {
-      // Get the world position of the bone
+    // if (boneRef.current) {
+    //   // Get the world position of the bone
+    //   const boneWorldPosition = new Vector3();
+    //   boneRef.current.getWorldPosition(boneWorldPosition);
+    //   // Make sure the camera keeps looking at the bone
+    //   camera.lookAt(boneWorldPosition);
+    //    // Lerp the camera position to the bone's position for smooth zoom
+    //   camera.position.lerp(new Vector3(boneWorldPosition.x, boneWorldPosition.y, boneWorldPosition.z + 3), 0.05);
+
+    //   // Optionally, you can update the FOV for a more zoomed-in effect
+    //   camera.fov = MathUtils.lerp(camera.fov, 30, 0.05); // Gradually zoom in FOV (adjust the 30 to the desired FOV)
+
+      
+
+    //   // // Update camera and render
+    //   // camera.updateProjectionMatrix();
+      
+    // }
+     if (boneRef.current) {
       const boneWorldPosition = new Vector3();
       boneRef.current.getWorldPosition(boneWorldPosition);
-
-      // Make the camera look at the bone's position (using its world position)
+//  camera.lookAt(boneWorldPosition);
+     
+      // Smoothly lerp camera position and zoom
+      // vrmRef.current.position.lerp(new Vector3(vrmRef.current.position.x,vrmRef.current.position.y, vrmRef.current.position.z-0.5), 0.05);
+      // camera.fov = MathUtils.lerp(camera.fov, 30, 0.05); // Gradually zoom in (adjust the 30 to the desired FOV)
       camera.lookAt(boneWorldPosition);
+      
+      // Ensure the camera updates properly
+      //  camera.updateProjectionMatrix();
+      //  camera.lookAt(boneWorldPosition);
     }
   })
 

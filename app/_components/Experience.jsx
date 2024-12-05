@@ -65,12 +65,12 @@ const CameraManager = () => (
 function Experience() {
   // Leva controls for real-time adjustments
   const { position, rotation } = useControls({
-    position: { value: [0, -0.3, 4.0], step: 0.1 },
-    rotation: { value: [0, 3.1, 0], step: 0.1 },
+    position: { value: [0.6, -0.2, 3.1], step: 0.1 },
+    rotation: { value: [0, 2.7, 0], step: 0.1 },
   });
 
   return (
-    <div className="h-screen w-screen bg-black">
+    <div className="">
       <Leva collapsed />
       <Canvas shadows camera={{ position: [0, 1, 5], fov: 30 }}>
         {/* Directional Light */}

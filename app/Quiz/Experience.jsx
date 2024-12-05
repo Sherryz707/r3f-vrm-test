@@ -1,16 +1,16 @@
 'use client';
 
 import { Canvas } from '@react-three/fiber';
-import { Environment, CameraControls, OrbitControls } from '@react-three/drei';
+import { Environment, CameraControls, OrbitControls,RoundedBox, Text } from '@react-three/drei';
 import { Leva, useControls } from 'leva';
-import { Model } from './AlreadyVrmAvatar';
+import { Model } from '../_components/AlreadyVrmAvatar';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
 import { useEffect, useState } from 'react';
 
 const CameraManager = () => (
   <OrbitControls
-    target={[0, 1, -1]} // Focus on the character's upper body
+    target={[0, 1, 1]} // Focus on the character's upper body
     enablePan={true}
     enableZoom={true}
     maxDistance={10}
@@ -21,8 +21,8 @@ const CameraManager = () => (
 function Experience() {
   // Leva controls for real-time adjustments
   const { position, rotation,expression } = useControls({
-    position: { value: [0, -0.3, 4.0], step: 0.1 },
-    rotation: { value: [0, 3.1, 0], step: 0.1 },
+    position: { value: [-0.1, -0.5, 3.7], step: 0.1 },
+    rotation: { value: [0, 3.3, 0], step: 0.1 },
     expression: { options: ['neutral','happy']}
   });
     const [currentVrm,setCurrentVrm]=useState()
@@ -61,28 +61,27 @@ function Experience() {
     };
   }, []);
   return (
-    <div className="h-screen w-screen bg-black">
+    <div className="h-[32rem] w-[35rem] relative z-10">
       <Leva collapsed />
       <Canvas shadows camera={{ position: [0, 1, 5], fov: 30 }}>
         {/* Directional Light */}
         <directionalLight
-          position={[2, 4, 5]} // Position of light source
-          intensity={1.5} // Strong light for clear character visibility
+          position={[-0.1, -0.5, 3.7]} // Position of light source
+          intensity={2} // Strong light for clear character visibility
           castShadow
         />
         {/* Ambient Light */}
-        <ambientLight intensity={0.5} />
+        {/* <ambientLight intensity={0.5} /> */}
         {/* Additional Light for Shadow Fill */}
         
 
         {/* Environment for realistic reflections */}
         <Environment preset="sunset" />
-
+        {/* Circular boundary using Drei's Circle */}
         {/* Avatar Model */}
-              {currentVrm && <Model currentVrm={currentVrm} position={position} rotation={rotation} expression={expression} />}
-
+        {currentVrm && <Model currentVrm={currentVrm} position={position} rotation={rotation} expression={expression} />}
         {/* Camera Controls */}
-        <CameraManager />
+        {/* <CameraManager /> */}
       </Canvas>
     </div>
   );
