@@ -64,11 +64,23 @@ const CameraManager = () => (
 
 function Experience() {
   // Leva controls for real-time adjustments
-  const { position, rotation } = useControls({
+  const { position, rotation,zoom } = useControls({
     position: { value: [0.6, -0.2, 3.1], step: 0.1 },
     rotation: { value: [0, 2.7, 0], step: 0.1 },
+    zoom: {
+      options:['zoom',"no_zoom"]
+    }
   });
-
+  useEffect(() => {
+    if (zoom == "zoom") {
+      const bone = currentVrm.humanoid.getNormalizedBoneNode('rightHand');
+    const boneWorldPosition = new Vector3();
+      bone.getWorldPosition(boneWorldPosition);
+    camera.lookAt(0,1,5,...boneWorldPosition);
+    } else {
+      
+  }
+},[zoom])
   return (
     <div className="">
       <Leva collapsed />

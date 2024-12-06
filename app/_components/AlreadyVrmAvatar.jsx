@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAnimations } from '@react-three/drei';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
@@ -8,23 +8,22 @@ import { useFrame, useThree } from '@react-three/fiber';
 import {loadMixamoAnimation} from "./loadMixamoAnim"
 export const Model = ({ currentVrm, expression, ...props }) => {
   const { camera } = useThree(); // Access the camera
-  console.log("HAND",currentVrm.humanoid.getNormalizedBoneNode("leftHand"))
+  console.log("HAND",currentVrm)
   const vrmRef = useRef(null); // VRM model ref for direct manipulation
   const boneRef=useRef(null)
   // create AnimationMixer for VRM
   let currentMixer = new AnimationMixer( currentVrm.scene );
   console.log(currentVrm.expressionManager.expressionMap)
   // mixamo animation
-  
+  const [zoom,setZoom]=useState(false)
   useEffect(() => {
     
-    loadFBX("/Waving.fbx")
+    loadFBX("/Waving_right.fbx")
     
     const action = actions['happy']
     action.reset().fadeIn(0.5).play();
     action.clampWhenFinished = true; // Stop the animation at the last frame
     action.loop=LoopOnce; 
-    
     
 
     
@@ -65,8 +64,10 @@ export const Model = ({ currentVrm, expression, ...props }) => {
       setTimeout(() => {
         action.paused = true;
         const bone = currentVrm.humanoid.getNormalizedBoneNode('rightHand'); // This will return an Object3D
+        
       if (bone) {
         boneRef.current = bone;
+        // setZoom(true)
       }
         // Pause animation
     }, 1055); // 50
@@ -74,6 +75,14 @@ export const Model = ({ currentVrm, expression, ...props }) => {
     } );
 
   }
+  // useEffect(() => {
+  //   if (boneRef.current) {
+  //     console.log("ZOOMING IN BROTHERS")
+  //     const boneWorldPosition = new Vector3();
+  //     boneRef.current.getWorldPosition(boneWorldPosition);
+  //     camera.lookAt(boneWorldPosition);
+  //   }
+  // },[zoom])
   // Play the blink animation when the component mounts
   useEffect(() => {
     if (actions[expression]) {
@@ -120,7 +129,7 @@ export const Model = ({ currentVrm, expression, ...props }) => {
       // Smoothly lerp camera position and zoom
       // vrmRef.current.position.lerp(new Vector3(vrmRef.current.position.x,vrmRef.current.position.y, vrmRef.current.position.z-0.5), 0.05);
       // camera.fov = MathUtils.lerp(camera.fov, 30, 0.05); // Gradually zoom in (adjust the 30 to the desired FOV)
-      camera.lookAt(boneWorldPosition);
+      // camera.lookAt(boneWorldPosition);
       
       // Ensure the camera updates properly
       //  camera.updateProjectionMatrix();
